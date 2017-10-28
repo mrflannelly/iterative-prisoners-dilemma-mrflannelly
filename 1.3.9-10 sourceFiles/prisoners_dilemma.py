@@ -14,6 +14,7 @@ from __future__ import print_function
 #
 # prisoners_dilemma.py automates competition among different strategies
 # for the Iterative Prisoners Dilemma, the canonical game of game-theory.
+
 # Each strategy is pitted against each other strategy for 100 to 200 rounds.
 # The results of all previous rounds within a 100-200 round stretch are known
 # to both players. 
@@ -33,12 +34,11 @@ from __future__ import print_function
 import random
 import os.path              
     
-import example0, example1, example2
+import example0, example1, example2, example3
 import teamflan
-betray = example1
-collude = example0
 
-modules = [example0, example1, example2, teamflan]
+
+modules = [example0, example1, example2, teamflan,example3]
 for module in modules:
     reload(module)
     print ('reloaded',module)
@@ -373,5 +373,5 @@ def post_to_file(string, filename='tournament.txt', directory=''):
  
 ### Call main_play() if this file is executed
 if __name__ == '__main__':
-    scores, moves, reports = main_play(modules[0:4])   
+    scores, moves, reports = main_play(modules)   
     section0, section1, section2, section3 = reports

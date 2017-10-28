@@ -11,25 +11,30 @@ Player 3 (P3): Mr. F, Randomness unless you backstab
         If the opponent colludes than the algorithm randomly selects c or b for 
         the next round. If the opponent backstabs, than the algorithm will alway
         s backstab back. 
+Player 4 (P4): E3, Collude but retaliate
+        Collude first round. Collude, except in a round after getting 
+        a severe punishment.
 --------------------------------------------------------------------------------
 Section 1 - Player vs. Player
 --------------------------------------------------------------------------------
 Each column shows pts/round earned against each other player:
-             P0     P1     P2     P3
-vs. P0 :      0    100     49     44
-vs. P1 :   -500      0   -375   -250
-vs. P2 :   -249    -75      0   -141
-vs. P3 :   -225 [;  -250   -281      0
-TOTAL  :   -974   -225   -607   -347
+             P0     P1     P2     P3     P4
+vs. P0 :      0    100     50     46      0
+vs. P1 :   -500      0   -376   -250   -376
+vs. P2 :   -250    -74      0   -139   -199
+vs. P3 :   -232   -250   -284      0   -305
+vs. P4 :      0    -74   -199   -124      0
+TOTAL  :   -982   -298   -809   -467   -880
 --------------------------------------------------------------------------------
 Section 2 - Leaderboard
 --------------------------------------------------------------------------------
 Average points per round:
 Team name (P#):  Score      with strategy name
-E0        (P1):        -57 points with Betray                                  
-Mr. F     (P3):        -87 points with Randomness unless you backstab          
-E2        (P2):       -152 points with Alternate                               
-E0        (P0):       -244 points with Collude                                 
+E0        (P1):        -60 points with Betray                                  
+Mr. F     (P3):        -94 points with Randomness unless you backstab          
+E2        (P2):       -162 points with Alternate                               
+E3        (P4):       -176 points with Collude but retaliate                   
+E0        (P0):       -197 points with Collude                                 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 example0--------------------------------------------------------------------------------
@@ -190,6 +195,37 @@ if __name__ == '__main__':
               my_score=0, 
               their_score=0,
               result='b')             --------------------------------------------------------------------------------
+example3--------------------------------------------------------------------------------
+####
+# Each team's file must define four tokens:
+#     team_name: a string
+#     strategy_name: a string
+#     strategy_description: a string
+#     move: A function that returns 'c' or 'b'
+####
+
+team_name = 'E3'
+strategy_name = 'Collude but retaliate'
+strategy_description = '''\
+Collude first round. Collude, except in a round after getting 
+a severe punishment.'''
+    
+def move(my_history, their_history, my_score, their_score):
+    '''Make my move based on the history with this player.
+    
+    history: a string with one letter (c or b) per round that has been played with this opponent.
+    their_history: a string of the same length as history, possibly empty. 
+    The first round between these two players is my_history[0] and their_history[0]
+    The most recent round is my_history[-1] and their_history[-1]
+    
+    Returns 'c' or 'b' for collude or betray.
+    '''
+    if len(my_history)==0: # It's the first round; collude.
+        return 'c'
+    elif my_history[-1]=='c' and their_history[-1]=='b':
+        return 'b' # Betray if they were severely punished last time,
+    else:
+        return 'c' # otherwise collude.--------------------------------------------------------------------------------
 Section 3 - Game Data for Team E0
 --------------------------------------------------------------------------------
 -500 pt/round: E0(P0) "Collude"
@@ -197,32 +233,38 @@ Section 3 - Game Data for Team E0
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
 
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-
-cccccccc
-BBBBBBBB
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
 
 --------------------------------------------------------------------------------
--249 pt/round: E0(P0) "Collude"
-49 pt/round: E2(P2) "Alternate"
+-250 pt/round: E0(P0) "Collude"
+50 pt/round: E2(P2) "Alternate"
 CcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc
 CBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCB
 
 CcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc
 CBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCB
 
-CcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcC
-CBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBC
+CcCcCcCcCc
+CBCBCBCBCB
 
 --------------------------------------------------------------------------------
--225 pt/round: E0(P0) "Collude"
-44 pt/round: Mr. F(P3) "Randomness unless you backstab"
-CCCCcCCCcccCcCcCCcCCcCccCccCcCCCcCCCCCCccCCccCcCCCCcCCCcCcCcCcCCcCccCCcCcCcCcccc
-CCCCBCCCBBBCBCBCCBCCBCBBCBBCBCCCBCCCCCCBBCCBBCBCCCCBCCCBCBCBCBCCBCBBCCBCBCBCBBBB
+-232 pt/round: E0(P0) "Collude"
+46 pt/round: Mr. F(P3) "Randomness unless you backstab"
+CcCcCcccCcCcCccCcCccCCcCCcCCCCccCCccccCccCCCcccCCccCCcCCCCCCCcccCccCCccCccCCCcCC
+CBCBCBBBCBCBCBBCBCBBCCBCCBCCCCBBCCBBBBCBBCCCBBBCCBBCCBCCCCCCCBBBCBBCCBBCBBCCCBCC
 
-ccCCcCccCCccccCcCcCccccCcCCcCCcCCcCcCCccCCccCcCCCcCccCCCCC
-BBCCBCBBCCBBBBCBCBCBBBBCBCCBCCBCCBCBCCBBCCBBCBCCCBCBBCCCCC
+ccCcCCccccCcCcCcCCcCCCcCcCcCCCcCCCcCCcCcCCCccCCcCcCcCcccCC
+BBCBCCBBBBCBCBCBCCBCCCBCBCBCCCBCCCBCCBCBCCCBBCCBCBCBCBBBCC
+
+--------------------------------------------------------------------------------
+0 pt/round: E0(P0) "Collude"
+0 pt/round: E3(P4) "Collude but retaliate"
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -233,20 +275,17 @@ Section 3 - Game Data for Team E0
 BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-BBBBBBBB
-cccccccc
+BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 --------------------------------------------------------------------------------
--75 pt/round: E0(P1) "Betray"
--375 pt/round: E2(P2) "Alternate"
+-74 pt/round: E0(P1) "Betray"
+-376 pt/round: E2(P2) "Alternate"
 BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb
 cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb
 
-BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb
-cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb
+BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbB
+cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbc
 
 --------------------------------------------------------------------------------
 -250 pt/round: E0(P1) "Betray"
@@ -254,56 +293,77 @@ cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb
 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 
-bbbbbbbbbbbbbbbbbbbb
-bbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+
+bbbbbbbbbbb
+bbbbbbbbbbb
+
+--------------------------------------------------------------------------------
+-74 pt/round: E0(P1) "Betray"
+-376 pt/round: E3(P4) "Collude but retaliate"
+BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb
+cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb
+
+BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbB
+cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbc
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Section 3 - Game Data for Team E2
 --------------------------------------------------------------------------------
-49 pt/round: E2(P2) "Alternate"
--249 pt/round: E0(P0) "Collude"
+50 pt/round: E2(P2) "Alternate"
+-250 pt/round: E0(P0) "Collude"
 CBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCB
 CcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc
 
 CBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCB
 CcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc
 
-CBCBCBCBCBCBCBCBCBCBCBCBCBCBCBCBC
-CcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcC
+CBCBCBCBCB
+CcCcCcCcCc
 
 --------------------------------------------------------------------------------
--375 pt/round: E2(P2) "Alternate"
--75 pt/round: E0(P1) "Betray"
+-376 pt/round: E2(P2) "Alternate"
+-74 pt/round: E0(P1) "Betray"
 cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb
 BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb
 
-cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb
-BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb
+cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbc
+BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbB
 
 --------------------------------------------------------------------------------
--281 pt/round: E2(P2) "Alternate"
--141 pt/round: Mr. F(P3) "Randomness unless you backstab"
-CBcBcBcBcBcBcBcbcbcbcBcBcbcbcbcBcbcbcbcbcBcBcBcBcBcBcBcbcbcbcBcBcbcBcbcBcBcBcBcB
-CcBcBcBcBcBcBcBbBbBbBcBcBbBbBbBcBbBbBbBbBcBcBcBcBcBcBcBbBbBbBcBcBbBcBbBcBcBcBcBc
+-284 pt/round: E2(P2) "Alternate"
+-139 pt/round: Mr. F(P3) "Randomness unless you backstab"
+CBcbcBcbcbcBcbcbcbcBcbcbcBcBcBcBcbcBcbcbcbcbcbcbcbcBcBcBcBcbcBcBcbcbcbcBcbcbcBcb
+CcBbBcBbBbBcBbBbBbBcBbBbBcBcBcBcBbBcBbBbBbBbBbBbBbBcBcBcBcBbBcBcBbBbBbBcBbBbBcBb
 
-cbcbcbcbcBcBcbcbcbcBcbcBcBcBcbcBcbcbcBcbcbcBcBcBcBcBcBcbcBcBcBcbcbcBcbcbcbcbcbcb
-BbBbBbBbBcBcBbBbBbBcBbBcBcBcBbBcBbBbBcBbBbBcBcBcBcBcBcBbBcBcBcBbBbBcBbBbBbBbBbBb
+cbcbcbcBcbcbcbcbcBcbcBcBcBcBcBcbcBcBcBcBcBcbcBcbcBcBcBcBcBcbcbcBcBcBcBcbcBcbcbcB
+BbBbBbBcBbBbBbBbBcBbBcBcBcBcBcBbBcBcBcBcBcBbBcBbBcBcBcBcBcBbBbBcBcBcBcBbBcBbBbBc
 
-cBcbcbcbcbcbcBcBcbcB
-BcBbBbBbBbBbBcBcBbBc
+cbcbcBcbcbcBcBcbcBcbcBcBcbcBcbcBcBcBcbc
+BbBbBcBbBbBcBcBbBcBbBcBcBbBcBbBcBcBcBbB
+
+--------------------------------------------------------------------------------
+-199 pt/round: E2(P2) "Alternate"
+-199 pt/round: E3(P4) "Collude but retaliate"
+CBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcB
+CcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBc
+
+cBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBc
+BcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcB
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Section 3 - Game Data for Team Mr. F
 --------------------------------------------------------------------------------
-44 pt/round: Mr. F(P3) "Randomness unless you backstab"
--225 pt/round: E0(P0) "Collude"
-CCCCBCCCBBBCBCBCCBCCBCBBCBBCBCCCBCCCCCCBBCCBBCBCCCCBCCCBCBCBCBCCBCBBCCBCBCBCBBBB
-CCCCcCCCcccCcCcCCcCCcCccCccCcCCCcCCCCCCccCCccCcCCCCcCCCcCcCcCcCCcCccCCcCcCcCcccc
+46 pt/round: Mr. F(P3) "Randomness unless you backstab"
+-232 pt/round: E0(P0) "Collude"
+CBCBCBBBCBCBCBBCBCBBCCBCCBCCCCBBCCBBBBCBBCCCBBBCCBBCCBCCCCCCCBBBCBBCCBBCBBCCCBCC
+CcCcCcccCcCcCccCcCccCCcCCcCCCCccCCccccCccCCCcccCCccCCcCCCCCCCcccCccCCccCccCCCcCC
 
-BBCCBCBBCCBBBBCBCBCBBBBCBCCBCCBCCBCBCCBBCCBBCBCCCBCBBCCCCC
-ccCCcCccCCccccCcCcCccccCcCCcCCcCCcCcCCccCCccCcCCCcCccCCCCC
+BBCBCCBBBBCBCBCBCCBCCCBCBCBCCCBCCCBCCBCBCCCBBCCBCBCBCBBBCC
+ccCcCCccccCcCcCcCCcCCCcCcCcCCCcCCCcCCcCcCCCccCCcCcCcCcccCC
 
 --------------------------------------------------------------------------------
 -250 pt/round: Mr. F(P3) "Randomness unless you backstab"
@@ -311,19 +371,76 @@ ccCCcCccCCccccCcCcCccccCcCCcCCcCCcCcCCccCCccCcCCCcCccCCCCC
 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 
-bbbbbbbbbbbbbbbbbbbb
-bbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+
+bbbbbbbbbbb
+bbbbbbbbbbb
 
 --------------------------------------------------------------------------------
--141 pt/round: Mr. F(P3) "Randomness unless you backstab"
--281 pt/round: E2(P2) "Alternate"
-CcBcBcBcBcBcBcBbBbBbBcBcBbBbBbBcBbBbBbBbBcBcBcBcBcBcBcBbBbBbBcBcBbBcBbBcBcBcBcBc
-CBcBcBcBcBcBcBcbcbcbcBcBcbcbcbcBcbcbcbcbcBcBcBcBcBcBcBcbcbcbcBcBcbcBcbcBcBcBcBcB
+-139 pt/round: Mr. F(P3) "Randomness unless you backstab"
+-284 pt/round: E2(P2) "Alternate"
+CcBbBcBbBbBcBbBbBbBcBbBbBcBcBcBcBbBcBbBbBbBbBbBbBbBcBcBcBcBbBcBcBbBbBbBcBbBbBcBb
+CBcbcBcbcbcBcbcbcbcBcbcbcBcBcBcBcbcBcbcbcbcbcbcbcbcBcBcBcBcbcBcBcbcbcbcBcbcbcBcb
 
-BbBbBbBbBcBcBbBbBbBcBbBcBcBcBbBcBbBbBcBbBbBcBcBcBcBcBcBbBcBcBcBbBbBcBbBbBbBbBbBb
-cbcbcbcbcBcBcbcbcbcBcbcBcBcBcbcBcbcbcBcbcbcBcBcBcBcBcBcbcBcBcBcbcbcBcbcbcbcbcbcb
+BbBbBbBcBbBbBbBbBcBbBcBcBcBcBcBbBcBcBcBcBcBbBcBbBcBcBcBcBcBbBbBcBcBcBcBbBcBbBbBc
+cbcbcbcBcbcbcbcbcBcbcBcBcBcBcBcbcBcBcBcBcBcbcBcbcBcBcBcBcBcbcbcBcBcBcBcbcBcbcbcB
 
-BcBbBbBbBbBbBcBcBbBc
-cBcbcbcbcbcbcBcBcbcB
+BbBbBcBbBbBcBcBbBcBbBcBcBbBcBbBcBcBcBbB
+cbcbcBcbcbcBcBcbcBcbcBcBcbcBcbcBcBcBcbc
+
+--------------------------------------------------------------------------------
+-124 pt/round: Mr. F(P3) "Randomness unless you backstab"
+-305 pt/round: E3(P4) "Collude but retaliate"
+CBbBbBbBcBbBbBbBbBbBcBbBbBcBcBbBbBbBbBcBbBcBcBbBbBbBcBcBbBcBbBcBbBbBbBcBbBcBbBbB
+CcbcbcbcBcbcbcbcbcbcBcbcbcBcBcbcbcbcbcBcbcBcBcbcbcbcBcBcbcBcbcBcbcbcbcBcbcBcbcbc
+
+bBbBbBcBbBcBcBcBbBbBbBbBbBcBcBbBbBcBcBbBbBbBbBbBcBbBcBcBbBcBbBbBcBcBbBbBcBbBbBcB
+bcbcbcBcbcBcBcBcbcbcbcbcbcBcBcbcbcBcBcbcbcbcbcbcBcbcBcBcbcBcbcbcBcBcbcbcBcbcbcBc
+
+bBcBcBcBcBbBbBbBbBbBcBbBcBbBbBcBbBcBcBc
+bcBcBcBcBcbcbcbcbcbcBcbcBcbcbcBcbcBcBcB
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+Section 3 - Game Data for Team E3
+--------------------------------------------------------------------------------
+0 pt/round: E3(P4) "Collude but retaliate"
+0 pt/round: E0(P0) "Collude"
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+
+--------------------------------------------------------------------------------
+-376 pt/round: E3(P4) "Collude but retaliate"
+-74 pt/round: E0(P1) "Betray"
+cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb
+BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb
+
+cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbc
+BbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbB
+
+--------------------------------------------------------------------------------
+-199 pt/round: E3(P4) "Collude but retaliate"
+-199 pt/round: E2(P2) "Alternate"
+CcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBc
+CBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcB
+
+BcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcB
+cBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBcBc
+
+--------------------------------------------------------------------------------
+-305 pt/round: E3(P4) "Collude but retaliate"
+-124 pt/round: Mr. F(P3) "Randomness unless you backstab"
+CcbcbcbcBcbcbcbcbcbcBcbcbcBcBcbcbcbcbcBcbcBcBcbcbcbcBcBcbcBcbcBcbcbcbcBcbcBcbcbc
+CBbBbBbBcBbBbBbBbBbBcBbBbBcBcBbBbBbBbBcBbBcBcBbBbBbBcBcBbBcBbBcBbBbBbBcBbBcBbBbB
+
+bcbcbcBcbcBcBcBcbcbcbcbcbcBcBcbcbcBcBcbcbcbcbcbcBcbcBcBcbcBcbcbcBcBcbcbcBcbcbcBc
+bBbBbBcBbBcBcBcBbBbBbBbBbBcBcBbBbBcBcBbBbBbBbBbBcBbBcBcBbBcBbBbBcBcBbBbBcBbBbBcB
+
+bcBcBcBcBcbcbcbcbcbcBcbcBcbcbcBcbcBcBcB
+bBcBcBcBcBbBbBbBbBbBcBbBcBbBbBcBbBcBcBc
 
 --------------------------------------------------------------------------------
